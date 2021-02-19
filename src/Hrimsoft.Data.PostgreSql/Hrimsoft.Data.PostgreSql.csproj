@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <PackageId>Hrimsoft.Data.PostgreSql</PackageId>
+        <Title>Hrimsoft.Data.PostgreSql</Title>
+        <Authors>Basim Al-Jawahery</Authors>
+        <Description>Provides some useful exceptions, helpers and extensions for Data Access Layaer </Description>
+        <RepositoryUrl>https://github.com/Basim108/hrimsoft.data.postgresql.git</RepositoryUrl>
+        <Company>Himsoft</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>Provides some useful exceptions, helpers and extensions for Data Access Layaer </PackageReleaseNotes>
+        <RootNamespace>Hrimsoft.Data.PostgreSql</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Hrimsoft.Core" Version="0.0.2" />
+        <PackageReference Include="Npgsql" Version="5.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
+    </ItemGroup>
+</Project>

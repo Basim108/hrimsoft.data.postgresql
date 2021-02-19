@@ -1,0 +1,42 @@
+name: "CD to Nuget"
+
+on:
+  release:
+    types: [published]
+
+env:
+  PACKAGE_NAME: 'Hrimsoft.Data.PostgreSql'
+  PROJECT_PATH: 'src/Hrimsoft.Data.PostgreSql/Hrimsoft.Data.PostgreSql.csproj'
+  TESTS_PROJECT_PATH: 'tests/Hrimsoft.Data.PostgreSql.Tests/Hrimsoft.Data.PostgreSql.Tests.csproj'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
+  NUGET_SOURCE_URL: 'https://api.nuget.org/v3/index.json'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  deploy:
+    name: 'Deploy'
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v2
+
+    - name: 'Install dotnet'
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+
+    - name: 'Restore packages'
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+
+    - name: 'Build project'
+      run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+
+    - name: 'Unit tests'
+      run:  dotnet test ${{ env.TESTS_PROJECT_PATH }}
+
+    - name: 'Pack project'
+      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols --include-source -p:PackageVersion=${{ github.event.release.tag_name }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+
+    - name: 'Push package'
+      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/${{ env.PACKAGE_NAME }}.${{ github.event.release.tag_name }}.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
