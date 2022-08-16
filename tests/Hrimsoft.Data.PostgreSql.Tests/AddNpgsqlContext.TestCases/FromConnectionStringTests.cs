@@ -1,59 +1,53 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
+using Npgsql;
 using NUnit.Framework;
 
-namespace Hrimsoft.Data.PostgreSql.Tests
-{
-    public class FromConnectionStringTests
-    {
-        private Mock<IConfiguration> _configuration;
+namespace Hrimsoft.Data.PostgreSql.Tests {
+    public class FromConnectionStringTests {
+        private IConfiguration   _configuration;
+        private IServiceProvider _serviceProvider;
 
         private const string DEFAULT_CONNECTION_STRING =
             "Host=192.168.122.195;Port=5430;Database=test_db;Username=test_user;Password=12345;Pooling=True;CommandTimeout=300;Application Name=Hrimsoft.Data.Tests;";
 
         [SetUp]
-        public void Setup()
-        {
-            _configuration = new Mock<IConfiguration>();
-            var mockConfSection = new Mock<IConfigurationSection>();
-            mockConfSection.Setup(a => a[It.Is<string>(s => s == "db")])
-                           .Returns(DEFAULT_CONNECTION_STRING);
-            _configuration.Setup(x => x.GetSection("ConnectionStrings"))
-                          .Returns(mockConfSection.Object);
+        public void Setup() {
+            _configuration = new ConfigurationBuilder()
+                            .AddInMemoryCollection(new Dictionary<string, string>() {
+                                 { "ConnectionStrings:db", DEFAULT_CONNECTION_STRING }
+                             }).Build();
+            var services = new ServiceCollection()
+               .AddNpgsqlContext<DbContext>(_configuration);
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         [Test]
-        public void Should_use_host_from_connection_string()
-        {
-            var services = new ServiceCollection().AddNpgsqlContext<DbContext>(_configuration.Object);
-            var sp       = services.BuildServiceProvider();
-            var resolved = sp.GetService<DbContext>();
+        public void Should_use_host_from_connection_string() {
+            var resolved = _serviceProvider.GetService<DbContext>();
             Assert.NotNull(resolved);
-            var connection = resolved.Database.GetDbConnection();
+            var connection = resolved.Database.GetDbConnection() as NpgsqlConnection;
             Assert.NotNull(connection);
-            Assert.IsTrue(connection.DataSource?.StartsWith("tcp://192.168.122.195"));
+            Assert.IsNull(connection.Host);
+            Assert.IsTrue(connection.ConnectionString.Contains("192.168.122.195"));
         }
-        
+
         [Test]
-        public void Should_use_port_from_connection_string()
-        {
-            var services = new ServiceCollection().AddNpgsqlContext<DbContext>(_configuration.Object);
-            var sp       = services.BuildServiceProvider();
-            var resolved = sp.GetService<DbContext>();
+        public void Should_use_port_from_connection_string() {
+            var resolved = _serviceProvider.GetService<DbContext>();
             Assert.NotNull(resolved);
-            var connection = resolved.Database.GetDbConnection();
+            var connection = resolved.Database.GetDbConnection() as NpgsqlConnection;
             Assert.NotNull(connection);
-            Assert.IsTrue(connection.DataSource?.EndsWith(":5430"));
+            Assert.AreEqual(0, connection.Port);
+            Assert.IsTrue(connection.ConnectionString.Contains("=5430"));
         }
-        
+
         [Test]
-        public void Should_use_user_name_from_connection_string()
-        {
-            var services = new ServiceCollection().AddNpgsqlContext<DbContext>(_configuration.Object);
-            var sp       = services.BuildServiceProvider();
-            var resolved = sp.GetService<DbContext>();
+        public void Should_use_user_name_from_connection_string() {
+            var resolved = _serviceProvider.GetService<DbContext>();
             Assert.NotNull(resolved);
             var connection = resolved.Database.GetDbConnection();
             Assert.NotNull(connection);
@@ -61,11 +55,8 @@ namespace Hrimsoft.Data.PostgreSql.Tests
         }
 
         [Test]
-        public void Should_use_password_from_connection_string()
-        {
-            var services = new ServiceCollection().AddNpgsqlContext<DbContext>(_configuration.Object);
-            var sp       = services.BuildServiceProvider();
-            var resolved = sp.GetService<DbContext>();
+        public void Should_use_password_from_connection_string() {
+            var resolved = _serviceProvider.GetService<DbContext>();
             Assert.NotNull(resolved);
             var connection = resolved.Database.GetDbConnection();
             Assert.NotNull(connection);

@@ -35,7 +35,7 @@ namespace Hrimsoft.Data.PostgreSql.Tests
             Assert.NotNull(resolved);
             var connection = resolved.Database.GetDbConnection();
             Assert.NotNull(connection);
-            Assert.IsTrue(connection.DataSource?.StartsWith("tcp://localhost"));
+            Assert.IsTrue(connection.ConnectionString.Contains("Host=localhost"));
         }
         
         [Test]
@@ -49,7 +49,7 @@ namespace Hrimsoft.Data.PostgreSql.Tests
             Assert.NotNull(resolved);
             var connection = resolved.Database.GetDbConnection();
             Assert.NotNull(connection);
-            Assert.IsTrue(connection.DataSource?.EndsWith(":123"));
+            Assert.IsTrue(connection.ConnectionString.Contains("Port=123"));
         }
         
         [Test]

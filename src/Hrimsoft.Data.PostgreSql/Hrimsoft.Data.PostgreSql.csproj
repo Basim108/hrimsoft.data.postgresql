@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <PackageId>Hrimsoft.Data.PostgreSql</PackageId>
         <Title>Hrimsoft.Data.PostgreSql</Title>
         <Authors>Basim Al-Jawahery</Authors>
@@ -14,8 +14,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Hrimsoft.Core" Version="0.0.2" />
-        <PackageReference Include="Npgsql" Version="5.0.3" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
+        <PackageReference Include="Hrimsoft.Core" Version="0.0.8" />
+        <PackageReference Include="Npgsql" Version="6.0.6" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
     </ItemGroup>
 </Project>
