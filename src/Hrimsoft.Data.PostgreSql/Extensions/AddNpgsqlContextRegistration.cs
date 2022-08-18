@@ -85,7 +85,8 @@ public static class AddNpgsqlContextRegistration {
                 options.UseNpgsql(builder.ConnectionString,
                                   npgsqlOptionsAction => {
                                       npgsqlOptionsAction.MigrationsAssembly(migrationAssembly);
-                                      npgsqlOptionsAction.MigrationsHistoryTable(historyTable, historySchema);
+                                      if (!string.IsNullOrWhiteSpace(historyTable))
+                                          npgsqlOptionsAction.MigrationsHistoryTable(historyTable, historySchema);
                                   });
         });
         return services;
@@ -97,20 +98,17 @@ public static class AddNpgsqlContextRegistration {
             return null;
         var schema = appConfig[historySchemaVarName];
         if (string.IsNullOrWhiteSpace(schema) && historySchemaVarName != DEFAULT_HISTORY_SCHEMA_VAR_NAME)
-            throw new ConfigurationException($"There is no migration history schema in the environment variable '{historySchemaVarName}'");
+            schema = "public";
         return schema;
     }
-    
+
     private static string GetHistoryTable(IConfiguration appConfig, string historyTableVarName) {
         // database can be set from environment variable or connection string
         if (string.IsNullOrWhiteSpace(historyTableVarName))
             return null;
-        var table = appConfig[historyTableVarName];
-        if (string.IsNullOrWhiteSpace(table) && historyTableVarName != DEFAULT_HISTORY_TABLE_VAR_NAME)
-            throw new ConfigurationException($"There is no migration history table in the environment variable '{historyTableVarName}'");
-        return table;
+        return appConfig[historyTableVarName];
     }
-    
+
     private static string GetDatabase(IConfiguration appConfig, string databaseVarName) {
         // database can be set from environment variable or connection string
         if (string.IsNullOrWhiteSpace(databaseVarName))
