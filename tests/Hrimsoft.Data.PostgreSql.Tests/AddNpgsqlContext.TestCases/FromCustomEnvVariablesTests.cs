@@ -17,14 +17,14 @@ namespace Hrimsoft.Data.PostgreSql.Tests
         [SetUp]
         public void Setup()
         {
-            _dbVars = new DbConfigEnvVariables(AddNpgsqlContextRegistration.DEFAULT_CONNECTION_STRING_VAR_NAME,
-                                               AddNpgsqlContextRegistration.DEFAULT_DB_HOST_VAR_NAME,
-                                               AddNpgsqlContextRegistration.DEFAULT_DB_PORT_VAR_NAME,
-                                               AddNpgsqlContextRegistration.DEFAULT_DB_NAME_VAR_NAME,
-                                               AddNpgsqlContextRegistration.DEFAULT_DB_USER_VAR_NAME,
-                                               AddNpgsqlContextRegistration.DEFAULT_DB_PASSWORD_VAR_NAME,
-                                               AddNpgsqlContextRegistration.DEFAULT_HISTORY_TABLE_VAR_NAME,
-                                               AddNpgsqlContextRegistration.DEFAULT_HISTORY_SCHEMA_VAR_NAME);
+            _dbVars = new DbConfigEnvVariables(ConnectionStringBuilder.DEFAULT_CONNECTION_STRING_VAR_NAME,
+                                               ConnectionStringBuilder.DEFAULT_DB_HOST_VAR_NAME,
+                                               ConnectionStringBuilder.DEFAULT_DB_PORT_VAR_NAME,
+                                               ConnectionStringBuilder.DEFAULT_DB_NAME_VAR_NAME,
+                                               ConnectionStringBuilder.DEFAULT_DB_USER_VAR_NAME,
+                                               ConnectionStringBuilder.DEFAULT_DB_PASSWORD_VAR_NAME,
+                                               ConnectionStringBuilder.DEFAULT_HISTORY_TABLE_VAR_NAME,
+                                               ConnectionStringBuilder.DEFAULT_HISTORY_SCHEMA_VAR_NAME);
             _configuration = new Mock<IConfiguration>();
             var mockConfSection = new Mock<IConfigurationSection>();
             mockConfSection.Setup(a => a[It.Is<string>(s => s == "db")])
